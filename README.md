@@ -12,6 +12,7 @@ library.
 
 - [Weights & Biases](https://www.wandb.com)
 - [MLflow](https://www.mlflow.org/)
+- [Comet](https://www.comet.com)
 
 If you'd like to add a new logger or logging option, please submit a PR to this
 repo!
@@ -139,3 +140,50 @@ remove_config_values = ["paths.train", "paths.dev", "corpora.train.path", "corpo
 | `nested`               | `bool`                     | Controls whether run is nested in parent run. `True` creates a nested run (default: `False`).                                                                                                                           |
 | `tags`                 | `Optional[Dict[str, Any]]` | A dictionary of string keys and values to set as tags on the run. If a run is being resumed, these tags are set on the resumed run. If a new run is being created, these tags are set on the new run (default: `None`). |
 | `remove_config_values` | `List[str]`                | A list of values to exclude from the config before it is uploaded to MLflow (default: `[]`).                                                                                                                            |
+
+## CometLogger
+
+### Installation
+
+This logger requires `comet_ml` to be installed and configured:
+
+```bash
+pip install comet_ml
+```
+
+### Usage
+
+`spacy.CometLogger.v1` is a logger that tracks the results of each training
+steps to [Comet](https://www.comet.com) including but not limited to the full
+spacy config, metrics, installed Python libraries and console logs. To use this
+logger, you will need to have `comet_ml` installed and the API key configured
+either through an [environment variable](https://www.comet.com/docs/v2/guides/tracking-ml-training/configuring-comet/#configure-comet-using-the-comet-config-file)
+or through the [Comet config file](https://www.comet.com/docs/v2/guides/tracking-ml-training/configuring-comet/#configure-comet-using-the-comet-config-file).
+Once the data is logged to Comet, you can use Comet's built-in dashboarding
+capabilities to share your training runs with colleagues. If the built-in
+visualization options are not enough, you can also write custom dynamic
+plots in Python!
+
+**Note** that by default, the full (interpolated)
+[training config](https://spacy.io/usage/training#config) is sent over to 
+MLflow. If you prefer to **exclude certain information** such as path
+names, you can list those fields in "dot notation" in the
+`remove_config_values` parameter. These fields will then be removed from the
+config before uploading, but will otherwise remain in the config file stored
+on your local system.
+
+### Example config
+
+```ini
+[training.logger]
+@loggers = "spacy.CometLogger.v1"
+experiment_name = "lemmatization_impact_eval"
+tags = ["lemmatixation", "evaluation"]
+remove_config_values = ["paths.train", "paths.dev", "corpora.train.path", "corpora.dev.path"]
+```
+
+| Name                   | Type                  | Description                                                                                                                                                                                                             |
+| ---------------------- | --------------------  | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `run_name`             | `Optional[str]`       | Name of new experiment (default: `None`).                                                                                                                                             |
+| `tags`                 | `Optional[Dict[str]]` | A dictionary of strings to set as tags on the experiment (default: `None`). |
+| `remove_config_values` | `List[str]`           | A list of values to exclude from the config before it is uploaded to Comet (default: `[]`).                                                                                                                            |
