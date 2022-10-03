@@ -179,6 +179,7 @@ on your local system.
 @loggers = "spacy.CometLogger.v1"
 experiment_name = "lemmatization_impact_eval"
 tags = ["lemmatixation", "evaluation"]
+model_log_interval = 10
 remove_config_values = ["paths.train", "paths.dev", "corpora.train.path", "corpora.dev.path"]
 ```
 
@@ -186,4 +187,5 @@ remove_config_values = ["paths.train", "paths.dev", "corpora.train.path", "corpo
 | ---------------------- | --------------------  | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `run_name`             | `Optional[str]`       | Name of new experiment (default: `None`).                                                                                                                                             |
 | `tags`                 | `Optional[Dict[str]]` | A dictionary of strings to set as tags on the experiment (default: `None`). |
+| `model_log_interval`   | `Optional[int]`       | Step interval at which to log the model to the Comet experiment (default: `None`) |
 | `remove_config_values` | `List[str]`           | A list of values to exclude from the config before it is uploaded to Comet (default: `[]`).                                                                                                                            |

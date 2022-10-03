@@ -14,6 +14,7 @@ from spacy.training.loggers import console_logger
 def comet_logger_v1(
     experiment_name: Optional[str] = None,
     tags: Optional[List[str]] = None,
+    model_log_interval: Optional[int] = None,
     remove_config_values: List[str] = [],
 ):
     try:
@@ -68,12 +69,16 @@ def comet_logger_v1(
                         }
                     )
 
-                output_path = info.get("output_path", None)
-                if output_path and score == max(info["checkpoints"])[0]:
-                    experiment.log_model(
-                        name="best_model",
-                        file_or_folder=output_path
-                    )
+                if model_log_interval and info.get("output_path"):
+                    if (
+                        info["step"] % model_log_interval == 0
+                        and info["step"] != 0
+                    ):
+                        experiment.log_model(
+                            name="best_model",
+                            file_or_folder=output_path,
+                            overwrite=True
+                        )
 
         def finalize() -> None:
             console_finalize()
